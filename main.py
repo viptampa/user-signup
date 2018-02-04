@@ -1,4 +1,9 @@
 from flask import Flask, request
+import os
+import jinja2
+
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+jinja_env = jinja2.Environment(loader= jinja2.FileSystemLoader(template_dir))
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -29,20 +34,24 @@ form = """<!DOCTYPE html>
             <label><h1>UserSignup</h1></label>
             <label>Username:
             <input type="text" name="username" value="{username}"></label>
-            <p class="error">{username_error}</p>
-            <br><br>
+            <span class="error">{username_error}</span>
+            <br>
+            <br>
             <label>Password:
             <input type="text" name="password" value="{password}"></label>
-            <p class="error">{password_error}</p>
-            <br><br>
+            <span class="error">{password_error}</span>
+            <br>
+            <br>
             <label>Verify Password:
             <input type="text" name="vpassword" value="{vpassword}"></label>
-            <p class="error">{vpassword_error}</p>
-            <br><br>
+            <span class="error">{vpassword_error}</span>
+            <br>
+            <br>
             <label>Email (optional):
             <input type="text" name="email" value="{email}"></label>
-            <p class="error">{email_error}</p>
-            <br><br>
+            <span class="error">{email_error}</span>
+            <br>
+            <br>
             <input type="submit" value="Validate" />
         </form>
     </body>
@@ -110,7 +119,7 @@ def validateinput():
     else:
         return form.format(username_error=username_error, password_error
         =password_error, vpassword_error=vpassword_error, email_error=email_error,
-        username=username, password=password, vpassword=vpassword, email=email)
+        username=username, password="", vpassword="", email=email)
 
     
 
