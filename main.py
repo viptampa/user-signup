@@ -1,67 +1,22 @@
 from flask import Flask, request
+import cgi
 import os
 import jinja2
 
-template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-jinja_env = jinja2.Environment(loader= jinja2.FileSystemLoader(template_dir))
+template_dir = os.path.join(os.path.dirname(__file__),'templates')
+jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
-form = """<!DOCTYPE html>
 
-<html>
-    <head>
-        <style>
-            form {{
-                background-color: #eee;
-                padding: 20px;
-                margin: 0 auto;
-                width: 540px;
-                font: 16px sans-serif;
-                border-radius: 10px;
-            }}
-            textarea {{
-                margin: 10px 0;
-                width: 540px;
-                height: 120px;
-            }}
-            .error {{ color: red;}}
-        </style>
-    </head>
-    <body>
-    <form method="POST">
-            <label><h1>UserSignup</h1></label>
-            <label>Username:
-            <input type="text" name="username" value="{username}"></label>
-            <span class="error">{username_error}</span>
-            <br>
-            <br>
-            <label>Password:
-            <input type="text" name="password" value="{password}"></label>
-            <span class="error">{password_error}</span>
-            <br>
-            <br>
-            <label>Verify Password:
-            <input type="text" name="vpassword" value="{vpassword}"></label>
-            <span class="error">{vpassword_error}</span>
-            <br>
-            <br>
-            <label>Email (optional):
-            <input type="text" name="email" value="{email}"></label>
-            <span class="error">{email_error}</span>
-            <br>
-            <br>
-            <input type="submit" value="Validate" />
-        </form>
-    </body>
-</html>"""
 
-@app.route('/',  methods=['GET'])
-def display_input_form():
-    return form.format(username='', username_error='', password='', 
-   password_error='', vpassword='', vpassword_error='', email='', email_error=''
-     )
+@app.route('/')
+def index():
+    template = jinja_env.get_template('home.html')
+    return template.render(username='', username_error='', password='', 
+   password_error='', vpassword='', vpassword_error='', email='', email_error='')
+
 
 
 @app.route('/',  methods=['POST'])
@@ -78,7 +33,6 @@ def validateinput():
     vpassword_error = ''
     email_error = ''
     welcomemsg = "Welcome, " + username + "!"
-    badvalues = (" ", "@@", "..")
     periodtoomuch = 0
     atsigntoomuch = 0
     spacetoomuch = 0
@@ -115,9 +69,11 @@ def validateinput():
             email = ""
 
     if not username_error and not password_error and not vpassword_error and not email_error:
-        return welcomemsg
+        template = jinja_env.get_template('success.html')
+        return template.render(username=username)
     else:
-        return form.format(username_error=username_error, password_error
+        template = jinja_env.get_template('home.html')
+        return template.render(username_error=username_error, password_error
         =password_error, vpassword_error=vpassword_error, email_error=email_error,
         username=username, password="", vpassword="", email=email)
 
